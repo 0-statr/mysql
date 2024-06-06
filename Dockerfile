@@ -21,15 +21,11 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends perl pwgen
 
 #Install MySQL
-RUN { \
-    #Set MySQL root password for silent installation
-    echo mysql-community-server mysql-community-server/root-pass password ''; \
-    echo mysql-community-server mysql-community-server/re-root-poss password ''>
-    } | debconf-set-selections \
-    && apt-get install -y mysql-server \
-    && mkdir -p /var/lib/mysql /var/run/mysqld \
-    && chown -R mysql:mysql /var/lib/mysql /var/run/mysqld \
-    && chmod 777 /var/run/mysqld
+RUN { echo mysql-community-server mysql-community-server/root-pass password ''; echo mysql-community-server mysql-community-server/re-root-poss password ''>} | debconf-set-selections
+RUN apt-get install -y mysql-server
+RUN mkdir -p /var/lib/mysql /var/run/mysqld
+RUN chown -R mysql:mysql /var/lib/mysql /var/run/mysqld
+RUN chmod 777 /var/run/mysqld
 
 #Solve the problem that ubuntu cannot log in from another container
 RUN sed -i 's/bind-address/#bind-address/' /etc/mysql/mysql.conf.d/mysqld.cnf
